@@ -81,7 +81,7 @@ func Address(s string) uintptr {
 	return uintptr(unsafe.Pointer(&bin[0]))
 }
 
-func NewDatabase(dbPath string) (Database, error) {
+func Open(dbPath string) (Database, error) {
 	ecode := ESTEMISC
 	db, _, _ := estOpen.Call(
 		Address(dbPath),
@@ -108,7 +108,7 @@ func (cond Cond) Close() {
 
 type DocId int
 
-func (db Database) Search(cond Cond) []DocId {
+func (db Database) search(cond Cond) []DocId {
 	var num int32
 
 	pages, _, _ := estDbSearch.Call(
@@ -125,6 +125,26 @@ func (db Database) Search(cond Cond) []DocId {
 	memcpy.Call(uintptr(unsafe.Pointer(&result[0])), pages, uintptr(4*num))
 	free.Call(pages)
 	return result
+}
+
+type Phrase string
+
+func (phrase Phrase) Join(cond Cond) {
+	cond.SetPhrase(string(phrase))
+}
+
+type ICond interface {
+	Join(Cond)
+}
+
+func (db Database) Search(conds ...ICond) []DocId {
+	cond := NewCond()
+	for _, c1 := range conds {
+		c1.Join(cond)
+	}
+	rc := db.search(cond)
+	cond.Close()
+	return rc
 }
 
 type Doc uintptr

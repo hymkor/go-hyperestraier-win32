@@ -7,21 +7,18 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/zetamatta/experimental/go-estraier"
+	est "github.com/zetamatta/experimental/go-estraier"
 )
 
 func search(args []string) error {
 	if len(args) < 2 {
 		return errors.New("too few arguments")
 	}
-	db, err := estraier.NewDatabase(args[0])
+	db, err := est.Open(args[0])
 	if err != nil {
 		return err
 	}
-	cond := estraier.NewCond()
-	cond.SetPhrase(strings.Join(args[1:], " "))
-	pages := db.Search(cond)
-	cond.Close()
+	pages := db.Search(est.Phrase(strings.Join(args[1:], " ")))
 
 	for i, page1 := range pages {
 		doc := db.GetDoc(page1)
@@ -35,7 +32,7 @@ func id2uri(args []string) error {
 	if len(args) < 2 {
 		return errors.New("too few arguments")
 	}
-	db, err := estraier.NewDatabase(args[0])
+	db, err := est.Open(args[0])
 	if err != nil {
 		return err
 	}
@@ -44,7 +41,7 @@ func id2uri(args []string) error {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %s\n", idStr, err)
 		} else {
-			doc := db.GetDoc(estraier.DocId(id))
+			doc := db.GetDoc(est.DocId(id))
 			fmt.Printf("(%d)\t%d\t%s\n", i+1, id, doc.Uri())
 			doc.Close()
 		}
