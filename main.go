@@ -12,6 +12,7 @@ var estOpen = estraier.NewProc("est_db_open")
 var estClose = estraier.NewProc("est_db_close")
 var estCondNew = estraier.NewProc("est_cond_new")
 var estCondSetPhrase = estraier.NewProc("est_cond_set_phrase")
+var estCondSetOptions = estraier.NewProc("est_cond_set_options")
 var estCondDelete = estraier.NewProc("est_cond_delete")
 var estDbSearch = estraier.NewProc("est_db_search")
 var estDbGetDoc = estraier.NewProc("est_db_get_doc")
@@ -102,6 +103,10 @@ func (cond Cond) SetPhrase(expr string) {
 	estCondSetPhrase.Call(uintptr(cond), Address(expr))
 }
 
+func (cond Cond) SetOptions(options uintptr) {
+	estCondSetOptions.Call(uintptr(cond), options)
+}
+
 func (cond Cond) Close() {
 	estCondDelete.Call(uintptr(cond))
 }
@@ -131,6 +136,25 @@ type Phrase string
 
 func (phrase Phrase) Join(cond Cond) {
 	cond.SetPhrase(string(phrase))
+}
+
+type Option uintptr
+
+const (
+	Sure   Option = 1 << 0  /* check every N-gram key */
+	Usual  Option = 1 << 1  /* check N-gram keys skipping by one */
+	Fast   Option = 1 << 2  /* check N-gram keys skipping by two */
+	Agito  Option = 1 << 3  /* check N-gram keys skipping by three */
+	Noidf  Option = 1 << 4  /* without TF-IDF tuning */
+	Simple Option = 1 << 10 /* with the simplified phrase */
+	Rough  Option = 1 << 11 /* with the rough phrase */
+	Union  Option = 1 << 15 /* with the union phrase */
+	Isect  Option = 1 << 16 /* with the intersection phrase */
+	Scfb   Option = 1 << 30 /* feed back scores (for debug) */
+)
+
+func (option Option) Join(cond Cond) {
+	cond.SetOptions(uintptr(option))
 }
 
 type ICond interface {

@@ -18,7 +18,7 @@ func search(args []string) error {
 	if err != nil {
 		return err
 	}
-	pages := db.Search(est.Phrase(strings.Join(args[1:], " ")))
+	pages := db.Search(est.Phrase(strings.Join(args[1:], " ")), est.Simple)
 
 	for i, page1 := range pages {
 		doc := db.GetDoc(page1)
