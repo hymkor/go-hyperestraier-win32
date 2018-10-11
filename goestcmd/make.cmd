@@ -13,5 +13,6 @@ exit /b
     exit /b
 
 :"upgrade"
-    for /F %%I in ('where goestcmd') do copy /-Y /V goestcmd.exe "%%I"
+    for %%I in (%CD%) do set "EXE=%%~nI.exe"
+    for /F %%I in ('where %EXE%') do copy /-Y /V "%EXE%" "%%I"
     exit /b
