@@ -32,14 +32,22 @@ const (
 type EstError uint32
 
 const (
-	_ESTENOERR  EstError = iota
-	_ESTEINVAL                  /* invalid argument */
-	_ESTEACCES                  /* access forbidden */
-	_ESTELOCK                   /* lock failure */
-	_ESTEDB                     /* database problem */
-	_ESTEIO                     /* I/O problem */
-	_ESTENOITEM                 /* no item */
-	_ESTEMISC   EstError = 9999 /* miscellaneous */
+	// _ESTENOERR means no error
+	_ESTENOERR EstError = iota
+	// _ESTEINVAL means invalid argument
+	_ESTEINVAL
+	// _ESTEACCES means access forbidden
+	_ESTEACCES
+	// _ESTELOCK means lock failure
+	_ESTELOCK
+	// _ESTEDB means database problem
+	_ESTEDB
+	// _ESTEIO means I/O problem
+	_ESTEIO
+	// _ESTENOITEM means no item
+	_ESTENOITEM
+	// _ESTEMISC means miscellaneous
+	_ESTEMISC EstError = 9999
 )
 
 func (ecode EstError) Error() string {
