@@ -32,22 +32,22 @@ const (
 type EstError uint32
 
 const (
-	// _ESTENOERR means no error
-	_ESTENOERR EstError = iota
-	// _ESTEINVAL means invalid argument
-	_ESTEINVAL
-	// _ESTEACCES means access forbidden
-	_ESTEACCES
-	// _ESTELOCK means lock failure
-	_ESTELOCK
-	// _ESTEDB means database problem
-	_ESTEDB
-	// _ESTEIO means I/O problem
-	_ESTEIO
-	// _ESTENOITEM means no item
-	_ESTENOITEM
-	// _ESTEMISC means miscellaneous
-	_ESTEMISC EstError = 9999
+	// ESTENOERR means no error
+	ESTENOERR EstError = iota
+	// ESTEINVAL means invalid argument
+	ESTEINVAL
+	// ESTEACCES means access forbidden
+	ESTEACCES
+	// ESTELOCK means lock failure
+	ESTELOCK
+	// ESTEDB means database problem
+	ESTEDB
+	// ESTEIO means I/O problem
+	ESTEIO
+	// ESTENOITEM means no item
+	ESTENOITEM
+	// ESTEMISC means miscellaneous
+	ESTEMISC EstError = 9999
 )
 
 func (ecode EstError) Error() string {
@@ -76,14 +76,14 @@ func cstr2string(cstr uintptr) string {
 }
 
 func lastError(ecode EstError) error {
-	if ecode == _ESTENOERR {
+	if ecode == ESTENOERR {
 		return nil
 	}
 	return ecode
 }
 
 func (db Database) Close() error {
-	ecode := _ESTEMISC
+	ecode := ESTEMISC
 	estClose.Call(uintptr(db), ecode.address())
 	return lastError(ecode)
 }
@@ -94,7 +94,7 @@ func address(s string) uintptr {
 }
 
 func Open(dbPath string) (Database, error) {
-	ecode := _ESTEMISC
+	ecode := ESTEMISC
 	db, _, _ := estOpen.Call(
 		address(dbPath),
 		forRead,
