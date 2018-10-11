@@ -11,19 +11,26 @@ import (
 	est "github.com/zetamatta/go-hyperestraier-win32"
 )
 
+var estIndex = flag.String("db", "", "Set directory of index")
 var condAddAttr = flag.String("a", "", "Add attribute as condition")
 
 func search(args []string) error {
-	if len(args) < 2 {
+	var _estIndex string
+	if *estIndex != "" {
+		_estIndex = *estIndex
+	} else {
+		_estIndex = args[0]
+		args = args[1:]
+	}
+	if len(args) < 1 {
 		return errors.New("too few arguments")
 	}
-	db, err := est.Open(args[0])
+	db, err := est.Open(_estIndex)
 	if err != nil {
 		return err
 	}
-	conds := []est.ICond{est.Phrase(strings.Join(args[1:], " "))}
+	conds := []est.ICond{est.Phrase(strings.Join(args, " "))}
 	if *condAddAttr != "" {
-		println("-a:", *condAddAttr)
 		conds = append(conds, est.CondAttr(*condAddAttr))
 	}
 	pages := db.Search(conds...)
