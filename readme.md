@@ -14,3 +14,40 @@ This is the dll-wrapper of HyperEstraier for the programming language Go.
     * qdbm.dll
     * zlib.dll
     * zlib1.dll
+
+
+Sample
+======
+
+
+[Full source](https://github.com/zetamatta/go-hyperestraier-win32/tree/master/goestcmd)
+
+```
+import (
+	"errors"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
+	est "github.com/zetamatta/go-hyperestraier-win32"
+)
+
+func search(args []string) error {
+	if len(args) < 2 {
+		return errors.New("too few arguments")
+	}
+	db, err := est.Open(args[0])
+	if err != nil {
+		return err
+	}
+	pages := db.Search(est.Phrase(strings.Join(args[1:], " ")), est.Simple)
+
+	for i, page1 := range pages {
+		doc := db.GetDoc(page1)
+		fmt.Printf("(%d)\t%d\t%s\n", i+1, page1, doc.Uri())
+		doc.Close()
+	}
+	return db.Close()
+}
+```
