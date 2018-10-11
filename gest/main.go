@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	est "github.com/zetamatta/experimental/go-estraier"
+	est "github.com/zetamatta/go-hyperestraier-win32"
 )
 
 func search(args []string) error {
