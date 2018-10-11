@@ -107,7 +107,7 @@ func (cond Cond) setOptions(options uintptr) {
 	estCondSetOptions.Call(uintptr(cond), options)
 }
 
-func (cond Cond) Close() {
+func (cond Cond) close() {
 	estCondDelete.Call(uintptr(cond))
 }
 
@@ -167,7 +167,7 @@ func (db Database) Search(conds ...ICond) []DocId {
 		c1.Join(cond)
 	}
 	rc := db.search(cond)
-	cond.Close()
+	cond.close()
 	return rc
 }
 
