@@ -11,3 +11,7 @@ exit /b
     go fmt
     go build
     exit /b
+
+:"upgrade"
+    for /F %%I in ('where goestcmd') do copy /-Y /V goestcmd.exe "%%I"
+    exit /b
