@@ -33,17 +33,17 @@ const (
 type EstError uint32
 
 const (
-	ESTENOERR  EstError = iota
-	ESTEINVAL                  /* invalid argument */
-	ESTEACCES                  /* access forbidden */
-	ESTELOCK                   /* lock failure */
-	ESTEDB                     /* database problem */
-	ESTEIO                     /* I/O problem */
-	ESTENOITEM                 /* no item */
-	ESTEMISC   EstError = 9999 /* miscellaneous */
+	_ESTENOERR  EstError = iota
+	_ESTEINVAL                  /* invalid argument */
+	_ESTEACCES                  /* access forbidden */
+	_ESTELOCK                   /* lock failure */
+	_ESTEDB                     /* database problem */
+	_ESTEIO                     /* I/O problem */
+	_ESTENOITEM                 /* no item */
+	_ESTEMISC   EstError = 9999 /* miscellaneous */
 )
 
-func (this *EstError) Address() uintptr {
+func (this *EstError) address() uintptr {
 	return uintptr(unsafe.Pointer(this))
 }
 
@@ -63,8 +63,8 @@ func cstr2string(cstr uintptr) string {
 	return buffer.String()
 }
 
-func LastError(ecode EstError) error {
-	if ecode == ESTENOERR {
+func lastError(ecode EstError) error {
+	if ecode == _ESTENOERR {
 		return nil
 	}
 	msg, _, _ := estErrMsg.Call(uintptr(ecode))
@@ -72,38 +72,38 @@ func LastError(ecode EstError) error {
 }
 
 func (db Database) Close() error {
-	ecode := ESTEMISC
-	estClose.Call(uintptr(db), ecode.Address())
-	return LastError(ecode)
+	ecode := _ESTEMISC
+	estClose.Call(uintptr(db), ecode.address())
+	return lastError(ecode)
 }
 
-func Address(s string) uintptr {
+func address(s string) uintptr {
 	bin := []byte(s)
 	return uintptr(unsafe.Pointer(&bin[0]))
 }
 
 func Open(dbPath string) (Database, error) {
-	ecode := ESTEMISC
+	ecode := _ESTEMISC
 	db, _, _ := estOpen.Call(
-		Address(dbPath),
+		address(dbPath),
 		forRead,
-		ecode.Address())
+		ecode.address())
 
-	return Database(db), LastError(ecode)
+	return Database(db), lastError(ecode)
 }
 
 type Cond uintptr
 
-func NewCond() Cond {
+func newCond() Cond {
 	cond, _, _ := estCondNew.Call()
 	return Cond(cond)
 }
 
-func (cond Cond) SetPhrase(expr string) {
-	estCondSetPhrase.Call(uintptr(cond), Address(expr))
+func (cond Cond) setPhrase(expr string) {
+	estCondSetPhrase.Call(uintptr(cond), address(expr))
 }
 
-func (cond Cond) SetOptions(options uintptr) {
+func (cond Cond) setOptions(options uintptr) {
 	estCondSetOptions.Call(uintptr(cond), options)
 }
 
@@ -135,7 +135,7 @@ func (db Database) search(cond Cond) []DocId {
 type Phrase string
 
 func (phrase Phrase) Join(cond Cond) {
-	cond.SetPhrase(string(phrase))
+	cond.setPhrase(string(phrase))
 }
 
 type Option uintptr
@@ -154,7 +154,7 @@ const (
 )
 
 func (option Option) Join(cond Cond) {
-	cond.SetOptions(uintptr(option))
+	cond.setOptions(uintptr(option))
 }
 
 type ICond interface {
@@ -162,7 +162,7 @@ type ICond interface {
 }
 
 func (db Database) Search(conds ...ICond) []DocId {
-	cond := NewCond()
+	cond := newCond()
 	for _, c1 := range conds {
 		c1.Join(cond)
 	}
@@ -192,7 +192,7 @@ func (doc Doc) Attr(attr string) string {
 	if doc == 0 {
 		return ""
 	}
-	value, _, _ := estDocAttr.Call(uintptr(doc), Address(attr))
+	value, _, _ := estDocAttr.Call(uintptr(doc), address(attr))
 	return cstr2string(value)
 }
 
