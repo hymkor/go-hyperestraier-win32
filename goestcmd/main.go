@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
@@ -9,6 +10,8 @@ import (
 
 	est "github.com/zetamatta/go-hyperestraier-win32"
 )
+
+var condAddAttr = flag.String("a", "", "Add attribute as condition")
 
 func search(args []string) error {
 	if len(args) < 2 {
@@ -18,7 +21,12 @@ func search(args []string) error {
 	if err != nil {
 		return err
 	}
-	pages := db.Search(est.Phrase(strings.Join(args[1:], " ")), est.Simple)
+	conds := []est.ICond{est.Phrase(strings.Join(args[1:], " "))}
+	if *condAddAttr != "" {
+		println("-a:", *condAddAttr)
+		conds = append(conds, est.CondAttr(*condAddAttr))
+	}
+	pages := db.Search(conds...)
 
 	for i, page1 := range pages {
 		doc := db.GetDoc(page1)
@@ -50,14 +58,16 @@ func id2uri(args []string) error {
 }
 
 func main1() error {
-	if len(os.Args) < 2 {
+	flag.Parse()
+	args := flag.Args()
+	if len(args) < 1 {
 		return errors.New("too few arguments")
 	}
-	switch os.Args[1] {
+	switch args[0] {
 	case "search":
-		return search(os.Args[2:])
+		return search(args[1:])
 	case "id2uri":
-		return id2uri(os.Args[2:])
+		return id2uri(args[1:])
 	}
 	return nil
 }

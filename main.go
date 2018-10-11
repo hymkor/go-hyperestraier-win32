@@ -12,6 +12,7 @@ var estClose = estraier.NewProc("est_db_close")
 var estCondNew = estraier.NewProc("est_cond_new")
 var estCondSetPhrase = estraier.NewProc("est_cond_set_phrase")
 var estCondSetOptions = estraier.NewProc("est_cond_set_options")
+var estCondAddAttr = estraier.NewProc("est_cond_add_attr")
 var estCondDelete = estraier.NewProc("est_cond_delete")
 var estDbSearch = estraier.NewProc("est_db_search")
 var estDbGetDoc = estraier.NewProc("est_db_get_doc")
@@ -118,6 +119,10 @@ func (cond Cond) setOptions(options uintptr) {
 	estCondSetOptions.Call(uintptr(cond), options)
 }
 
+func (cond Cond) addAttr(options string) {
+	estCondAddAttr.Call(uintptr(cond), address(options))
+}
+
 func (cond Cond) close() {
 	estCondDelete.Call(uintptr(cond))
 }
@@ -176,6 +181,12 @@ const (
 
 func (option Option) Join(cond Cond) {
 	cond.setOptions(uintptr(option))
+}
+
+type CondAttr string
+
+func (condAttr CondAttr) Join(cond Cond) {
+	cond.addAttr(string(condAttr))
 }
 
 type ICond interface {
