@@ -152,16 +152,26 @@ func (phrase Phrase) Join(cond Cond) {
 type Option uintptr
 
 const (
-	Sure   Option = 1 << 0  /* check every N-gram key */
-	Usual  Option = 1 << 1  /* check N-gram keys skipping by one */
-	Fast   Option = 1 << 2  /* check N-gram keys skipping by two */
-	Agito  Option = 1 << 3  /* check N-gram keys skipping by three */
-	Noidf  Option = 1 << 4  /* without TF-IDF tuning */
-	Simple Option = 1 << 10 /* with the simplified phrase */
-	Rough  Option = 1 << 11 /* with the rough phrase */
-	Union  Option = 1 << 15 /* with the union phrase */
-	Isect  Option = 1 << 16 /* with the intersection phrase */
-	Scfb   Option = 1 << 30 /* feed back scores (for debug) */
+	// Sure means check every N-gram key
+	Sure Option = 1 << 0
+	// Usual means check N-gram keys skipping by one
+	Usual Option = 1 << 1
+	// Fast means check N-gram keys skipping by two
+	Fast Option = 1 << 2
+	// Agito means check N-gram keys skipping by three
+	Agito Option = 1 << 3
+	// Noidf means without TF-IDF tuning
+	Noidf Option = 1 << 4
+	// Simple menas with the simplified phrase
+	Simple Option = 1 << 10
+	// Rough menas with the rough phrase
+	Rough Option = 1 << 11
+	// Union means with the union phrase
+	Union Option = 1 << 15
+	// Isect means with the intersection phrase
+	Isect Option = 1 << 16
+	// Scfb means feed back scores (for debug)
+	Scfb Option = 1 << 30
 )
 
 func (option Option) Join(cond Cond) {
