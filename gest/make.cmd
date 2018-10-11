@@ -1,3 +1,4 @@
+@echo off
 setlocal
 set GOARCH=386
 call :"%1"
