@@ -44,14 +44,21 @@ func search(args []string) error {
 }
 
 func id2uri(args []string) error {
-	if len(args) < 2 {
+	var _estIndex string
+	if *estIndex != "" {
+		_estIndex = *estIndex
+	} else {
+		_estIndex = args[0]
+		args = args[1:]
+	}
+	if len(args) < 1 {
 		return errors.New("too few arguments")
 	}
-	db, err := est.Open(args[0])
+	db, err := est.Open(_estIndex)
 	if err != nil {
 		return err
 	}
-	for i, idStr := range args[1:] {
+	for i, idStr := range args {
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %s\n", idStr, err)
