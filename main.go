@@ -1,7 +1,6 @@
 package estraier
 
 import (
-	"errors"
 	"strings"
 	"syscall"
 	"unsafe"
@@ -43,6 +42,11 @@ const (
 	_ESTEMISC   EstError = 9999 /* miscellaneous */
 )
 
+func (ecode EstError) Error() string {
+	msg, _, _ := estErrMsg.Call(uintptr(ecode))
+	return cstr2string(msg)
+}
+
 func (this *EstError) address() uintptr {
 	return uintptr(unsafe.Pointer(this))
 }
@@ -67,8 +71,7 @@ func lastError(ecode EstError) error {
 	if ecode == _ESTENOERR {
 		return nil
 	}
-	msg, _, _ := estErrMsg.Call(uintptr(ecode))
-	return errors.New(cstr2string(msg))
+	return ecode
 }
 
 func (db Database) Close() error {
