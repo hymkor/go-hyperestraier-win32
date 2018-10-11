@@ -104,32 +104,32 @@ func Open(dbPath string) (Database, error) {
 	return Database(db), lastError(ecode)
 }
 
-type Cond uintptr
+type ConditionsContainer uintptr
 
-func newCond() Cond {
+func newCond() ConditionsContainer {
 	cond, _, _ := estCondNew.Call()
-	return Cond(cond)
+	return ConditionsContainer(cond)
 }
 
-func (cond Cond) setPhrase(expr string) {
+func (cond ConditionsContainer) setPhrase(expr string) {
 	estCondSetPhrase.Call(uintptr(cond), address(expr))
 }
 
-func (cond Cond) setOptions(options uintptr) {
+func (cond ConditionsContainer) setOptions(options uintptr) {
 	estCondSetOptions.Call(uintptr(cond), options)
 }
 
-func (cond Cond) addAttr(options string) {
+func (cond ConditionsContainer) addAttr(options string) {
 	estCondAddAttr.Call(uintptr(cond), address(options))
 }
 
-func (cond Cond) close() {
+func (cond ConditionsContainer) close() {
 	estCondDelete.Call(uintptr(cond))
 }
 
 type DocID int
 
-func (db Database) search(cond Cond) []DocID {
+func (db Database) search(cond ConditionsContainer) []DocID {
 	var num int32
 
 	pages, _, _ := estDbSearch.Call(
@@ -150,7 +150,7 @@ func (db Database) search(cond Cond) []DocID {
 
 type Phrase string
 
-func (phrase Phrase) Join(cond Cond) {
+func (phrase Phrase) Join(cond ConditionsContainer) {
 	cond.setPhrase(string(phrase))
 }
 
@@ -179,23 +179,26 @@ const (
 	Scfb Option = 1 << 30
 )
 
-func (option Option) Join(cond Cond) {
+func (option Option) Join(cond ConditionsContainer) {
 	cond.setOptions(uintptr(option))
 }
 
 type CondAttr string
 
-func (condAttr CondAttr) Join(cond Cond) {
+func (condAttr CondAttr) Join(cond ConditionsContainer) {
 	cond.addAttr(string(condAttr))
 }
 
-type ICond interface {
-	Join(Cond)
+// Condition is the interface for conditions.
+// (Database)Search can receive objects satisfying Condition.
+type Condition interface {
+	Join(ConditionsContainer)
 }
 
-func (db Database) Search(conds ...ICond) []DocID {
+// Search searches documents satisfying conditions.
+func (db Database) Search(conditions ...Condition) []DocID {
 	cond := newCond()
-	for _, c1 := range conds {
+	for _, c1 := range conditions {
 		c1.Join(cond)
 	}
 	rc := db.search(cond)

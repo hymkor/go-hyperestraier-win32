@@ -29,7 +29,7 @@ func search(args []string) error {
 	if err != nil {
 		return err
 	}
-	conds := []est.ICond{est.Phrase(strings.Join(args, " "))}
+	conds := []est.Condition{est.Phrase(strings.Join(args, " "))}
 	if *condAddAttr != "" {
 		conds = append(conds, est.CondAttr(*condAddAttr))
 	}
