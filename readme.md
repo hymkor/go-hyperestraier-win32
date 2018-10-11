@@ -1,3 +1,5 @@
+[![GoDoc](https://godoc.org/github.com/zetamatta/go-hyperestraier-win32?status.svg)](https://godoc.org/github.com/zetamatta/go-hyperestraier-win32)
+
 go-hyperestraier-win32
 ======================
 
