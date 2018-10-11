@@ -22,7 +22,7 @@ func search(args []string) error {
 
 	for i, page1 := range pages {
 		doc := db.GetDoc(page1)
-		fmt.Printf("(%d)\t%d\t%s\n", i+1, page1, doc.Uri())
+		fmt.Printf("(%d)\t%d\t%s\n", i+1, page1, doc.URI())
 		doc.Close()
 	}
 	return db.Close()
@@ -41,8 +41,8 @@ func id2uri(args []string) error {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %s\n", idStr, err)
 		} else {
-			doc := db.GetDoc(est.DocId(id))
-			fmt.Printf("(%d)\t%d\t%s\n", i+1, id, doc.Uri())
+			doc := db.GetDoc(est.DocID(id))
+			fmt.Printf("(%d)\t%d\t%s\n", i+1, id, doc.URI())
 			doc.Close()
 		}
 	}

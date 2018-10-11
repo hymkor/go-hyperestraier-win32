@@ -47,8 +47,8 @@ func (ecode EstError) Error() string {
 	return cstr2string(msg)
 }
 
-func (this *EstError) address() uintptr {
-	return uintptr(unsafe.Pointer(this))
+func (ecode *EstError) address() uintptr {
+	return uintptr(unsafe.Pointer(ecode))
 }
 
 func cstr2string(cstr uintptr) string {
@@ -114,9 +114,9 @@ func (cond Cond) close() {
 	estCondDelete.Call(uintptr(cond))
 }
 
-type DocId int
+type DocID int
 
-func (db Database) search(cond Cond) []DocId {
+func (db Database) search(cond Cond) []DocID {
 	var num int32
 
 	pages, _, _ := estDbSearch.Call(
@@ -126,10 +126,10 @@ func (db Database) search(cond Cond) []DocId {
 		0)
 
 	if num <= 0 {
-		return []DocId{}
+		return []DocID{}
 	}
 
-	result := make([]DocId, num)
+	result := make([]DocID, num)
 	memcpy.Call(uintptr(unsafe.Pointer(&result[0])), pages, uintptr(4*num))
 	free.Call(pages)
 	return result
@@ -164,7 +164,7 @@ type ICond interface {
 	Join(Cond)
 }
 
-func (db Database) Search(conds ...ICond) []DocId {
+func (db Database) Search(conds ...ICond) []DocID {
 	cond := newCond()
 	for _, c1 := range conds {
 		c1.Join(cond)
@@ -176,7 +176,7 @@ func (db Database) Search(conds ...ICond) []DocId {
 
 type Doc uintptr
 
-func (db Database) GetDoc(id DocId) Doc {
+func (db Database) GetDoc(id DocID) Doc {
 	doc, _, _ := estDbGetDoc.Call(
 		uintptr(db),
 		uintptr(id),
@@ -199,6 +199,6 @@ func (doc Doc) Attr(attr string) string {
 	return cstr2string(value)
 }
 
-func (doc Doc) Uri() string {
+func (doc Doc) URI() string {
 	return doc.Attr("@uri")
 }
