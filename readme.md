@@ -15,10 +15,8 @@ This is the dll-wrapper of HyperEstraier for the programming language Go.
     * zlib.dll
     * zlib1.dll
 
-
 Sample
 ======
-
 
 [Full source](https://github.com/zetamatta/go-hyperestraier-win32/tree/master/goestcmd)
 
@@ -45,7 +43,7 @@ func search(args []string) error {
 
 	for i, page1 := range pages {
 		doc := db.GetDoc(page1)
-		fmt.Printf("(%d)\t%d\t%s\n", i+1, page1, doc.Uri())
+		fmt.Printf("(%d)\t%d\t%s\n", i+1, page1, doc.URI())
 		doc.Close()
 	}
 	return db.Close()
