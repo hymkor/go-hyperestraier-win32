@@ -112,7 +112,9 @@ func newCond() ConditionsContainer {
 }
 
 func (cond ConditionsContainer) setPhrase(expr string) {
-	estCondSetPhrase.Call(uintptr(cond), address(expr))
+	if len(expr) > 0 {
+		estCondSetPhrase.Call(uintptr(cond), address(expr))
+	}
 }
 
 func (cond ConditionsContainer) setOptions(options uintptr) {
