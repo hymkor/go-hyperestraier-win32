@@ -82,6 +82,8 @@ func main1() error {
 		return search(args[1:])
 	case "id2uri":
 		return id2uri(args[1:])
+	default:
+		return fmt.Errorf("invalid subcommand: %s", args[0])
 	}
 	return nil
 }
