@@ -19,17 +19,23 @@ func search(args []string) error {
 	if *estIndex != "" {
 		_estIndex = *estIndex
 	} else {
+		if len(args) < 1 {
+			return errors.New("too few arguments")
+		}
 		_estIndex = args[0]
 		args = args[1:]
-	}
-	if len(args) < 1 {
-		return errors.New("too few arguments")
 	}
 	db, err := est.Open(_estIndex)
 	if err != nil {
 		return err
 	}
-	conds := []est.Condition{est.Phrase(strings.Join(args, " "))}
+	conds := make([]est.Condition, 0, 3)
+	if len(args) > 0 {
+		text := strings.TrimSpace(strings.Join(args, " "))
+		if text != "" {
+			conds = append(conds, est.Phrase(text))
+		}
+	}
 	if *condAddAttr != "" {
 		conds = append(conds, est.CondAttr(*condAddAttr))
 	}
